@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(data);
             goods = arrayHelper(data);
             console.log(goods);
-            document.querySelector(".shop-field").innerHTML = showGoods(data);
+            document.querySelector(".shop-field").innerHTML = showGoods(goods);
             showCart();
 
             //let btn = document.querySelectorAll('.act');
@@ -54,15 +54,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             function showGoods(data) {
                 let out = '';
-                for (let i = 0; i < data.length; i++) {
-                    if (data[i]['gsx$show']['$t'] == 1) {
+                for (let i in data) {
+                    if (data[i]['show'] == 1) {
                         out += `<div class="col-lg-3 col-md-3 col-sm-2 text-center">`;
                         out += `<div class="goods">`;
-                        out += `<h5>${data[i]['gsx$name']['$t']}</h5>`;
-                        out += `<img src="${data[i]['gsx$image']['$t']}" style="width: 60px; height: 60px;" alt="">`;
-                        out += `<p class="cost">Цена: ${data[i]['gsx$cost']['$t']} грн</p>`;
-                        out += `<p class="cost">На складе : ${data[i]['gsx$kg']['$t']} кг</p>`;
-                        out += `<p class="cost"><button type="button"  name="add-to-cart"  class="btn btn-success act" data="${data[i]['gsx$id']['$t']}">Купить</button></p>`;
+                        out += `<h5>${data[i]['name']}</h5>`;
+                        out += `<img src="${data[i]['image']}" style="width: 60px; height: 60px;" alt="">`;
+                        out += `<p class="cost">Цена: ${data[i]['cost']} грн</p>`;
+                        out += `<p class="cost">На складе : ${data[i]['kg']} кг</p>`;
+                        out += `<p class="cost"><button type="button"  name="add-to-cart"  class="btn btn-success act" data="${data[i]['id']}">Купить</button></p>`;
                         out += `</div>`;
                         out += `</div>`;
                     }
@@ -90,6 +90,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     temp['category'] = arr[i]['gsx$category']['$t'];
                     temp['cost'] = arr[i]['gsx$cost']['$t'];
                     temp['image'] = arr[i]['gsx$image']['$t'];
+                    temp['show'] = arr[i]['gsx$show']['$t'];
+                    temp['kg'] = arr[i]['gsx$kg']['$t'];
+                    temp['id'] = arr[i]['gsx$id']['$t'];
                     out[arr[i]['gsx$id']['$t']] = temp;
                 }
                 return out;
@@ -97,14 +100,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             function showCart() {
                 let ul = document.querySelector('.cart');
-
                 ul.innerHTML = '';
                 let sum = 0;
-                console.log(cart);
                 for (let key in cart) {
-                    let li = '<li>';
-                    console.log(goods[key]);
+                    let li = `<li style="list-style-type: none">`;
                     li += goods[key]['name'] + ' ';
+                    li += `<img src="${goods[key]['image']}" width="35" height="35">  `;
                     li += ` <button name="minus-goods" data="${key}">-</button> `;
                     li += cart[key] + ' шт ';
                     li += ` <button name="plus-goods" data="${key}">+</button> `;
