@@ -4,6 +4,15 @@ document.addEventListener("DOMContentLoaded", function () {
     let cart = {};
     let goods = {};
 
+    function loadCartFromStorage() {
+        if (localStorage.getItem('cart') != undefined) {
+            cart = JSON.parse(localStorage.getItem('cart'));
+        }
+
+    }
+
+    loadCartFromStorage();
+
     async function fa(goods) {
         const urlGoogleSheet = "https://spreadsheets.google.com/feeds/list/16V959DYUkqz3ZWiD3AbbDAzuA00qUCnOV52TsHyzcOI/od6/public/values?alt=json";
         try {
@@ -12,19 +21,36 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(data);
             data = data["feed"]["entry"];
             console.log(data);
-            goods =  arrayHelper(data);
+            goods = arrayHelper(data);
             console.log(goods);
             document.querySelector(".shop-field").innerHTML = showGoods(data);
+            showCart();
 
-            let btn = document.querySelectorAll('.act');
-            btn.forEach((currentValue, index) => {
-                currentValue.onclick = function (e) {
+            //let btn = document.querySelectorAll('.act');
+            document.onclick = function (e) {
+                if (e.target.attributes.name != undefined) {
                     if (e.target.attributes.name.nodeValue == 'add-to-cart') {
                         addToCart(e.target.attributes.data.nodeValue);
+                    } else if (e.target.attributes.name.nodeValue == 'delete-goods') {
+                        delete cart[e.target.attributes.data.nodeValue];
+                        showCart();
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                    } else if (e.target.attributes.name.nodeValue == 'plus-goods') {
+                        cart[e.target.attributes.data.nodeValue]++;
+                        showCart();
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                    } else if (e.target.attributes.name.nodeValue == 'minus-goods') {
+                        if (cart[e.target.attributes.data.nodeValue] - 1 == 0) {
+                            delete cart[e.target.attributes.data.nodeValue];
+                        } else {
+                            cart[e.target.attributes.data.nodeValue]--;
+                        }
+                        showCart();
+                        localStorage.setItem('cart', JSON.stringify(cart));
                     }
-                };
-            });
-
+                }
+                return false;
+            };
 
             function showGoods(data) {
                 let out = '';
@@ -45,8 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-
-
             function addToCart(elem) {
                 if (cart[elem] !== undefined) {
                     cart[elem]++;
@@ -55,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 console.log(cart);
                 showCart();
+                localStorage.setItem('cart', JSON.stringify(cart));
             }
 
             function arrayHelper(arr) {
@@ -80,21 +105,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     let li = '<li>';
                     console.log(goods[key]);
                     li += goods[key]['name'] + ' ';
+                    li += ` <button name="minus-goods" data="${key}">-</button> `;
                     li += cart[key] + ' шт ';
+                    li += ` <button name="plus-goods" data="${key}">+</button> `;
                     li += goods[key]['cost'] * cart[key];
+                    li += ` <button name="delete-goods" data="${key}">x</button>`;
+                    li += `</li>`;
                     sum += goods[key]['cost'] * cart[key];
                     ul.innerHTML += li;
                 }
-                ul.innerHTML += 'Итого: '+sum;
+                ul.innerHTML += 'Итого: ' + sum;
+
             }
 
         } catch (e) {
             console.log(e);
         }
     }
-
     fa(goods);
-
-
-
 });
