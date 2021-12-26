@@ -20,9 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let data = await response.json();
             console.log(data);
             data = data["feed"]["entry"];
-            console.log(data);
             goods = arrayHelper(data);
-            console.log(goods);
             document.querySelector(".shop-field").innerHTML = showGoods(goods);
             showCart();
 
