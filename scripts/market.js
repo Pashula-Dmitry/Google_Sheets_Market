@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             let response = await fetch(urlGoogleSheet);
             let data = await response.json();
-            console.log(data);
             data = data["feed"]["entry"];
             goods = arrayHelper(data);
             document.querySelector(".shop-field").innerHTML = showGoods(goods);
